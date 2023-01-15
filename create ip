@@ -1,0 +1,28 @@
+import requests
+from bs4 import BeautifulSoup
+proxyList = []
+my_proxy = []
+response = requests.get('https://free-proxy-list.net/')
+bs = BeautifulSoup(response.text, 'lxml')
+table = bs.find('table')
+rows = table.find_all('tr')
+count = 0
+for row in rows:
+    ip = row.contents[0].text
+    port = row.contents[1].text
+    anonym = row.contents[4].text
+    secconn = row.contents[6].text
+    if (secconn =='yes' and (anonym == 'anonymous' or anonym == 'elite proxy')):
+        line = ip + ':' + port
+        proxy = {'http': line, 'https': line}
+        try:
+            testIp = requests.get('http://httpbin.org/ip', proxies=proxy,timeout=3)
+            my_proxy.append(line)
+            print(testIp,line)
+        except:
+            print('bad proxy')
+print(my_proxy)
+for i in range(3):
+    response = requests.get('https://free-proxy-list.net/', proxies=proxyList)
+    print(response)
+    i+=1
